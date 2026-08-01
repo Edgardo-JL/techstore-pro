@@ -160,7 +160,7 @@ function mostrarRegistroGuardado() {
   if (!resumen) return;
 
   resumen.innerHTML = `
-    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:20px;margin-top:24px;">
+    <div style="background:#1e293b;border:1px solid #bae6fd;border-radius:12px;padding:20px;margin-top:24px;color: #ffffff;">
       <h3 style="margin-bottom:12px;color:#0369a1;">👤 Cuenta registrada</h3>
       <p><strong>Nombre:</strong> ${usuario.nombre}</p>
       <p><strong>Email:</strong> ${usuario.email}</p>
