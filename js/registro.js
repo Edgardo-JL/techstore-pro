@@ -175,4 +175,4 @@ function mostrarRegistroGuardado() {
   resumen.style.display = 'block';
 }
 
-mostrarRegistroGuardado();
+mostrarRegistroGuardado(); 
