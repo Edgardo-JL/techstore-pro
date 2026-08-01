@@ -667,7 +667,7 @@ a:hover { color: var(--color-secundario); }
   border-radius: var(--radio);
   font-size: 15px;
   font-family: inherit;
-  color: var(--color-texto);
+  color: var(--color-oscuro);
   background: var(--color-fondo);
   transition: border-color .2s, box-shadow .2s;
   outline: none;
