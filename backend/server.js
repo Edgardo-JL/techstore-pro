@@ -29,20 +29,58 @@ app.get('/api/productos', async (req, res) => {
         const productos = await Producto.find();
         res.json(productos);
     }   catch (err) {
-        res.status(500).json({ error: 'Error al obtener productos' })
+        res.status(500).json({ error: 'Error al obtener productos' });
     }
 });
 
-// 6. RUTA DE PRUEBA 
+// 6. RUTA POST / API / PRODUCTOS - CREAR UN PRODUCTO NUEVO 
+
+app.post('/api/productos', async (req, res) => {
+    try {
+        const nuevoProducto = await Producto.create(req.body);
+        res.status(201).json(nuevoProducto);
+    } catch (err){
+            res.status(400).json({ error: err.message });
+    }
+});
+
+// 7. RUTA PUT / API / PRODUCTOS / :ID - ACTUALIAR PRODUCTO
+
+app.put('/api/productos/:id', async (req,res) => {
+    try {
+        const actualizado = await Producto.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true}
+        );
+        if (!actualizado) return res.status(404).json({ error: 'Producto no encontrado' });
+        res.json(actualizado);
+        } catch (err) {
+            res.status(400).json({ error: err.message});
+        }
+});
+
+// 8. RUTA DELETE / API / PRODUCTOS :ID - ELIMINAR UN PRODDUCTO
+
+app.delete('/api/productos/:id', async (req,res) => {
+    try {
+        const eliminado = await Producto.findByIdAndDelete(req.params.id);
+        if (!eliminado) return res.status(404).json({ error: 'Producto no encontrado'});
+        res.json({ mensaje: 'Producto eliminado correctamente', eliminado });
+    } catch (err) {
+        res.status(400).json({ error: err.message});
+    }
+});
+
+// 9. RUTA DE PRUEBA 
 
 app.get('/', (req, res) => {
     req.json({mensaje: 'Servidor TechStore Pro ✅'});
 });
 
-// 7. ARRANCAR EL SERVIDOR 
+// 10. ARRANCAR EL SERVIDOR 
 
 app.listen(PORT, () => {
     console.log('Servidor en http://localhost:${PORT}');
 });
-
 
