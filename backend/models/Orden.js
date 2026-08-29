@@ -5,14 +5,14 @@ const ordenSchema = new Schema({
 
     //¿Quien hizo la orden _ referencias al _id del usuario
 
-    ususario: {
+    usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
         required: true
     },
 
     // Arreglo de productos con cantidad
-    prdocutos: [{
+    productos: [{
         producto: {
             type: Schema.Types.ObjectId,
             ref: 'Producto'

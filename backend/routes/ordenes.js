@@ -15,7 +15,7 @@ router.post('/', verificarToken, async (req, res) => {
         });
         res.status(201).json(nuevaOrden);
     } catch (err) {
-        res.status(400).json({ error: err.menssage });
+        res.status(400).json({ error: err.message });
     }
 });
 
@@ -29,7 +29,7 @@ router.get('/', verificarToken, async (req, res) => {
         .populate('productos.producto', 'nombre precio');
         res.json(ordenes);
     } catch (err) {
-        res.status(500).json({ error: err.menssage});
+        res.status(500).json({ error: err.message});
     }
 });
 
