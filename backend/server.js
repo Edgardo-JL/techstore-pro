@@ -29,13 +29,13 @@ mongoose.connect(process.env.MONGODB_URI)
 // 9. RUTA DE PRUEBA 
 
 app.get('/', (req, res) => {
-    req.json({mensaje: 'Servidor TechStore Pro ✅'});
+    res.json({mensaje: 'Servidor TechStore Pro ✅'});
 });
 
 // 10. ARRANCAR EL SERVIDOR 
 
 app.listen(PORT, () => {
-    console.log('Servidor en http://localhost:${PORT}');
+    console.log(`Servidor en http://localhost:${PORT}`);
 });
 
 // 11. RUTAS DE AUTENTICACIÓN
