@@ -148,10 +148,12 @@ function crearTarjeta(producto) {
   return `
     <article class="tarjeta"
       data-id="${producto.id}"
+      data-mongo-id="${producto._id}"
       data-icono="${producto.icono || '📦'}"
       data-nombre="${producto.nombre}"
       data-desc="${producto.descripcion}"
-      data-precio="${producto.precio}">
+      data-precio="${producto.precio}"
+      data-imagen="${producto.imagen || ''}">
       <span class="badge-disponible">✓ Disponible</span>
       <img src="${producto.imagen}" alt="${producto.nombre}" class="tarjeta-img">
       <div class="tarjeta-info">
@@ -159,7 +161,7 @@ function crearTarjeta(producto) {
         <p class="tarjeta-desc">${producto.descripcion}</p>
         <div class="tarjeta-pie">
           <span class="tarjeta-precio">${producto.precio}</span>
-          <button class="btn-accion">Ver más</button>
+          <a href="producto.html?id=${producto._id || ''}" class="btn-accion">Ver más</a>
         </div>
       </div>
     </article>
@@ -227,6 +229,9 @@ if (modal) {
     document.querySelector('#modal-titulo').textContent = tarjeta.dataset.nombre || 'Producto';
     document.querySelector('#modal-desc').textContent   = tarjeta.dataset.desc   || '';
     document.querySelector('#modal-precio').textContent = tarjeta.dataset.precio || '';
+    modal.dataset.imagen = tarjeta.dataset.imagen || '';
+    modal.dataset.id     = tarjeta.dataset.id     || '';
+    modal.dataset.mongoId = tarjeta.dataset.mongoId || '';
     modal.classList.add('visible');
   }
 
@@ -234,6 +239,8 @@ if (modal) {
   // porque los botones .btn-accion los crea crearTarjeta() dinámicamente
   function registrarBotonesModal() {
     document.querySelectorAll('.btn-accion').forEach(function(boton) {
+      // si es un enlace <a> el navegador ya lo maneja, no registrar el modal 
+      if (boton.tagName == 'A') return;
       boton.addEventListener('click', function() {
         abrirModal(boton.closest('.tarjeta'));
       });
@@ -376,14 +383,16 @@ if (btnModalCarrito) {
   btnModalCarrito.addEventListener('click', function() {
     // Leer los datos del producto desde el modal
     const producto = {
-      nombre: document.getElementById('modal-titulo').textContent,
-      precio: document.getElementById('modal-precio').textContent,
-      icono: document.getElementById('modal-icono').textContent,
-      fecha:  new Date().toLocaleDateString('es-CO')
+      id:      modal.dataset.id      || '',
+      _id:     modal.dataset.mongoId || '',
+      nombre:  document.getElementById('modal-titulo').textContent,
+      precio:  document.getElementById('modal-precio').textContent,
+      icono:   document.getElementById('modal-icono').textContent,
+      imagen:  modal.dataset.imagen  || '',
+      fecha:   new Date().toLocaleDateString('es-CO')
     };
     
     agregarAlCarrito(producto);
-    
     // Cerrar el modal
     document.getElementById('modal-producto').classList.remove('visible');
   });
@@ -423,7 +432,14 @@ function mostrarPaginaCarrito() {
   carrito.forEach(function(producto, indice) {
     const item = document.createElement('div');
     item.classList.add('carrito-item');
+
+    // Si tiene imagen - mostrarla. Si no - mostrar el emoji.
+    const imagenHTML = producto.imagen
+    ? `<img src="${producto.imagen}" alt="${producto.nombre}" class="carrito-item-img">`
+    : `<span class="carrito-item-icono">${producto.icono}</span>`;
+
     item.innerHTML = `
+      ${imagenHTML}
       <span class="carrito-item-icono">${producto.icono}</span>
       <div class="carrito-item-info">
         <div class="carrito-item-nombre">${producto.nombre}</div>
@@ -460,3 +476,146 @@ if (btnVaciar) {
 }
 
 mostrarPaginaCarrito(); // llamar al cargar
+
+// ====== S17 ESTADO DE SESIÓN EN EL NAV ====
+// Lee el token del localstore y actualiza y actualiza el nav en todas las páginas 
+
+function actualizarNavSesion() {
+  const token        = localStorage.getItem('token');
+  const nombre       = localStorage.getItem('usuario-nombre');
+  const enlaceLogin  = document.querySelector('#nav-login');
+
+  if (!enlaceLogin) return;
+
+  if (token && nombre) {
+    // 1. Construir wrapper y botón con el nombre
+    const wrapper = document.createElement('div');
+    wrapper.className = 'usuario-dropdown';
+    const btn = document.createElement('button');
+    btn.className = 'usuario-btn';
+    btn.textContent = '👤 ' + nombre;
+
+    // 2. Construir menú con las tres opciones
+    const menu = document.createElement('div');
+    menu.className = 'usuario-menu';
+    const linkPerfil = document.createElement('a');
+    linkPerfil.href = 'perfil.html'; linkPerfil.textContent = '👤 Mi perfil';
+    const linkPedidos = document.createElement('a');
+    linkPedidos.href = 'mispedidos.html'; linkPedidos.textContent = '📦 Mis pedidos';
+    const sep = document.createElement('div');
+    sep.className = 'menu-separador';
+    const btnCerrar = document.createElement('button');
+    btnCerrar.className = 'btn-cerrar-sesion';
+    btnCerrar.textContent = '🚪 Cerrar sesión';
+    btnCerrar.addEventListener('click', function () {
+      localStorage.removeItem('token'); localStorage.removeItem('usuario-nombre');
+      window.location.href = 'login.html';
+    });
+    menu.appendChild(linkPerfil); menu.appendChild(linkPedidos);
+    menu.appendChild(sep); menu.appendChild(btnCerrar);
+    wrapper.appendChild(btn); wrapper.appendChild(menu);
+
+    // 3. Ocultar "Registro" — no tiene sentido estando logueado
+    const navMenu = document.querySelector('#nav-menu');
+    if (navMenu) navMenu.querySelectorAll('a').forEach(function (a) {
+      if (a.href.includes('registro.html')) a.style.display = 'none';
+    });
+
+    // 4. Reemplazar el <a id="nav-login"> por el dropdown
+    enlaceLogin.parentNode.replaceChild(wrapper, enlaceLogin);
+
+    // 5. Abrir/cerrar al hacer clic; cerrar al clic fuera
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation(); menu.classList.toggle('abierto');
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrapper.contains(e.target)) menu.classList.remove('abierto');
+    });
+
+  } else {
+    enlaceLogin.textContent = 'Login';
+    enlaceLogin.href = 'login.html';
+  }
+}
+
+actualizarNavSesion();
+
+// ===== S17 CHECKOUT - CONFIRMAR PEDIDO ======
+
+const btnConfirmar = document.getElementById('btn-confirmar');
+
+if (btnConfirmar) {
+  btnConfirmar.addEventListener('click', async function() {
+    const token   = localStorage.getItem('token');
+    const carrito = leerCarrito();
+    const mensaje = document.getElementById('checkout-mensaje');
+
+    // 1. Verificar sesión
+    if (!token) {
+      mensaje.innerHTML = '<div style="background: #fef9c3; border: 1px solid #fde847; border-radius:10px; padding:16px;">'
+        + '<p style="color: #854d0e; font-weight: 600;">⚠️ Debes iniciar sesión para confirmar tu pedido</p>'
+        + '<a href="login.html" style="color: #92400e;">Ir al login</a></div>';
+      mensaje.style.display = 'block';
+      return;
+    }
+
+    // 2. Verifica que el carrito no esta vacio
+    if (carrito.length == 0) {
+      mensaje.innerHTML = '<div style="background: #faf9c3; border: 1px solid #fde047; border-radius:10px; padding:16px;">'
+        + '<p style="color: #854d0e; font-weight: 600;">⚠️ El carrito está vacio</p></div>';
+      mensaje.style.display = 'block';
+      return;
+    }
+
+    // 3. Construir el array para el backend 
+    const productosParaEnviar = carrito.map(function(item) {
+      return { producto: item._id, cantidad: 1};
+    });
+    const total = carrito.reduce(function(acc, item) {
+      return acc + (parseFloat(item.precio.replace(/[^0-9.]/g, '')) || 0);
+    }, 0);
+
+    try {
+      btnConfirmar.disabled     = true;
+      btnConfirmar.textContent  = 'Enviando...';
+
+      // 4. Enviar al backend con el token JWT 
+      const respuesta = await fetch('http://localhost:3000/api/ordenes', {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ productos: productosParaEnviar, total: total})
+      });
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        mensaje.innerHTML = '<div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 10px; padding: 16px;">'
+          + '<p style="color: #991b1b; font-weight: 600;">❌ ' + (datos.error || 'Error al crear la orden') + '</p></div>';
+        mensaje.style.display = 'block';
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = '✅ Confirmar pedido';
+        return;
+      }
+
+      // 5. Éxito — vaciar carrito y mostrar confirmación
+      localStorage.removeItem('carrito');
+      actualizarBadge();
+      mensaje.innerHTML = '<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:10px;padding:20px;">'
+        + '<p style="color:#15803d;font-weight:700;font-size:16px;">✅ ¡Pedido confirmado!</p>'
+        + '<p style="color:#166534;font-size:13px;margin-top:8px;">Tu orden fue registrada exitosamente en el sistema.</p>'
+        + '<a href="index.html" style="color:#15803d;font-weight:600;">← Volver al inicio</a></div>';
+      mensaje.style.display = 'block';
+      mostrarPaginaCarrito();
+
+    } catch (error) {
+      mensaje.innerHTML = '<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:20px;">'
+        + '<p style="color:#991b1b;font-weight:600;">❌ No se pudo confirmar el pedido. Verifica que el servidor esté funcionando.</p>';
+      mensaje.style.display = 'block';
+      btnConfirmar.disabled = false;
+      btnConfirmar.textContent = '✅ Confirmar pedido';
+    }
+  });
+}

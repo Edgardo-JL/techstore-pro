@@ -50,8 +50,13 @@ formLogin.addEventListener('submit', async function(evento) {
     exito.style.display = 'block',
     formLogin.reset();
 
+    // 6. Redirigir al inicio 
+    setTimeout(function(){
+        window.location.href = 'index.html';
+    }, 1500);
+
 } catch (error) {
-    // 6. Error de red
+    // 7. Error de red
     document.querySelector('#error-login-email').textContent = 
     'No se pudo conectar. Verifica que npm run dev este corriendo.';
 }
