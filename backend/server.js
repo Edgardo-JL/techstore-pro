@@ -7,8 +7,13 @@ const mongoose        = require('mongoose');
 const Producto        = require('./models/Producto');
 const authRoutes      = require('./routes/auth');
 const verificarToken  = require('./middleware/auth');
-const productosRoutes = require('./routes/productos')
-const ordenesRoutes   = require('./routes/ordenes')
+const productosRoutes = require('./routes/productos');
+const ordenesRoutes   = require('./routes/ordenes');
+const pagoRoutes      = require('./routes/pago');
+
+// Forzar DNS de Google para evitar el error querySrv EREFUSED / Quitar luego :)
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 // 2. CREAR LA APICACION Y DEFINIR EL PUERTO 
 
@@ -49,4 +54,8 @@ app.use('/api/productos', productosRoutes);
 // 13. Rutas de órdenes 
 
 app.use('/api/ordenes', ordenesRoutes);
+
+// 14. Rutas de pagos 
+
+app.use('/api/pagos', pagoRoutes); 
 
