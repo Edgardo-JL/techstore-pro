@@ -11,10 +11,6 @@ const productosRoutes = require('./routes/productos');
 const ordenesRoutes   = require('./routes/ordenes');
 const pagoRoutes      = require('./routes/pago');
 
-// Forzar DNS de Google para evitar el error querySrv EREFUSED / Quitar luego :)
-const dns = require('dns');
-dns.setServers(['8.8.8.8', '1.1.1.1']);
-
 // 2. CREAR LA APICACION Y DEFINIR EL PUERTO 
 
 const app = express();

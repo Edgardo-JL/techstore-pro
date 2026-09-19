@@ -1,16 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nosotros | TechStore Pro</title>
-    <link rel="stylesheet" href="css/styles.css" />
-  </head>
-  <body>
-    <!-- BARRA SCROLL — S06: div vacío, el CSS lo posiciona y el JS le da el ancho -->
-    <div class="barra-scroll" id="barra-scroll"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin | TechStore Pro</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
 
-    <!-- HEADER — Igual en todas las páginas -->
+  <!-- Mismo header/footer que mispedidos.html -->
     <header class="header">
       <div class="header-logo">
         <span class="logo-icono">💻</span>
@@ -41,17 +39,17 @@
       </div>
     </header>
 
-    <main>
-      <div class="pedidos-contenedor">
-        <h1 class="pedidos-titulo">📦 Mis Pedidos</h1>
-        <p class="pedidos-subtitulo">Historial de todas tus órdenes</p>
-        <!-- mispedidos.js llena este div con tarjetas o mensajes de error -->
-        <div id="pedidos-lista">
-          <p>⌛ Cargando pedidos...</p>
-        </div>
+  <main>
+    <div class="pedidos-contenedor">
+      <h1 class="pedidos-titulo">🛠️ Panel de Administración</h1>
+      <p class="pedidos-subtitulo">Todas las órdenes de todos los clientes</p>
+      <div id="admin-ordenes-lista">
+        <p>⏳ Cargando órdenes...</p>
       </div>
-    </main>
+    </div>
+  </main>
 
+  <!-- Mismo footer -->
   <footer class="footer">
     <div class="footer-contenido">
       <div class="footer-marca">
@@ -81,7 +79,6 @@
 
   <script src="js/main.js"></script>
   <script src="js/timeline.js"></script>
-  <script src="js/mispedidos.js"></script>
-
+  <script src="js/admin.js"></script>
 </body>
 </html>
